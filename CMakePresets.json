@@ -1,0 +1,67 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Development (Debug)",
+      "description": "Debug build with compile commands enabled for static analysis tools",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_WARNINGS": "ON",
+        "ENABLE_WARNINGS_AS_ERRORS": "OFF",
+        "ENABLE_CPPLINT": "OFF",
+        "ENABLE_CPPCHECK": "OFF",
+        "ENABLE_CLANG_TIDY": "OFF"
+      }
+    },
+    {
+      "name": "debug-analysis",
+      "inherits": "debug",
+      "cacheVariables": {
+        "ENABLE_CPPLINT": "ON",
+        "ENABLE_CPPCHECK": "ON",
+        "ENABLE_CLANG_TIDY": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release Build",
+      "description": "Optimized release build configuration",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "debug-analysis",
+      "configurePreset": "debug-analysis"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "check-style",
+      "configurePreset": "debug",
+      "targets": [
+        "check-style"
+      ],
+      "description": "Runs custom cpplint and cppcheck targets"
+    }
+  ]
+}

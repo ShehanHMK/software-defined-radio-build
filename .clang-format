@@ -1,0 +1,28 @@
+---
+Language: Cpp
+BasedOnStyle: Google
+
+# Matches linelength=80 from CPPLINT.cfg
+ColumnLimit: 80
+
+# C++ Standard alignment
+Standard: c++17
+
+# Indentation rules matching Google/cpplint defaults
+IndentWidth: 2
+ContinuationIndentWidth: 4
+AccessModifierOffset: -1
+NamespaceIndentation: None
+
+# Functions & Statements
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Include Management
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+
+# Pointer/Reference alignment (Google standard: char *p)
+PointerAlignment: Left
+...

@@ -1,0 +1,7 @@
+// input/template file for all header files.
+// providing git information.
+
+#pragma once
+
+#define PROJECT_GIT_COMMIT "@GIT_COMMIT_HASH@"
+#define PROJECT_GIT_BRANCH "@GIT_BRANCH@"
