@@ -1,4 +1,4 @@
-#include <include/ima_adpcm_codec.h>
+#include <include/audio_codec_factory.h>
 #include <portaudio.h>
 
 #include <array>
@@ -46,8 +46,14 @@ int main() {
   config.frameSamples = 320;
   config.channels = 1;
 
-  std::unique_ptr<SDR::AudioCodec> codec =
-      std::make_unique<SDR::ImaAdpcmCodec>(config);
+  auto codec_id = SDR::AudioCodecId::IMA_ADPCM;
+
+  auto codec = SDR::AudioCodecFactory::create(codec_id, config);
+
+  if (!codec) {
+    // unsupported codec
+    return 1;
+  }
 
   const size_t pcmSamplesPerFrame = codec->frameSamples();
   const size_t encodedBytesPerFrame = codec->encodedBytesForFrame();

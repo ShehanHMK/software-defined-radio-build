@@ -3,6 +3,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/bin)   
 
 add_library(sdr_audio_codec STATIC
+    audio_codec_factory.cpp
     ima_adpcm_codec.cpp
 )
 
