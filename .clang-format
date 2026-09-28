@@ -9,9 +9,11 @@ ColumnLimit: 80
 Standard: c++17
 
 # Indentation rules matching Google/cpplint defaults
-IndentWidth: 2
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
 ContinuationIndentWidth: 4
-AccessModifierOffset: -1
+AccessModifierOffset: -4
 NamespaceIndentation: None
 
 # Functions & Statements
