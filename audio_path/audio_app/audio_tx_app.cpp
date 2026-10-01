@@ -1,34 +1,34 @@
-#include <include/audio_codec_factory.h>
 #include <portaudio.h>
 
-#include <array>
+#include <cmath>
 #include <csignal>
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <vector>
 
+#include "../libs/codec/include/audio_codec_factory.h"
+#include "../libs/platform-ipc/include/ipc.h"
 #include "git_info.h"
 
 static volatile bool g_running = true;
 
-static void handleSignal(int) { g_running = false; }
+static void handle_signal(int signal) { g_running = false; }
 
 static bool checkPaError(PaError err, const char *message) {
   if (err == paNoError) {
     return true;
   }
 
-  std::cerr << message << ": " << Pa_GetErrorText(err) << std::endl;
+  std::cerr << message << ":" << Pa_GetErrorText(err) << std::endl;
   return false;
 }
 
 int main() {
-  // Project version details.
-  std::cout << "Git Branch   : " << PROJECT_GIT_BRANCH << std::endl;
-  std::cout << "Git Commit Id: " << PROJECT_GIT_COMMIT << std::endl;
+  std::cout << "Git Branch:  " << GIT_BRANCH << std::endl;
+  std::cout << "Git Commit:  " << GIT_COMMIT << std::endl;
 
-  std::signal(SIGINT, handleSignal);
+  std::signal(SIGINT, handle_signal);
 
   /*
    *  ------ Audio configuration ------
@@ -60,7 +60,7 @@ int main() {
   std::vector<int16_t> outputPcm(pcmSamplesPerFrame);
   std::vector<uint8_t> encoded(encodedBytesPerFrame);
 
-  std::cout << "Codec loopback application" << std::endl;
+  std::cout << "Audio path source application" << std::endl;
   std::cout << "Codec: " << codec->name() << std::endl;
   std::cout << "Sample rate: " << codec->sampleRate() << " Hz" << std::endl;
   std::cout << "Frame samples: " << codec->frameSamples() << std::endl;
@@ -104,19 +104,29 @@ int main() {
     return 1;
   }
 
-  std::cout << "Realtime audio loopback started." << std::endl;
-  std::cout << "Mic -> encode -> decode -> speaker" << std::endl;
-  std::cout << "Press Ctrl+C to stop." << std::endl;
+  std::cout << "Audio stream started, Press Ctrl+C to stop" << std::endl;
 
   uint64_t frameCount = 0;
 
+  // Details required for IPC configuration.
+  uint8_t myNodeId = 1;
+  uint8_t dstNodeId = 2;
+  uint16_t port = 7000;
+
+  SDR::Ipc ipc;
+
+  if (!ipc.create(myNodeId, port, "sdripc0-send")) {
+    return 1;
+  }
+
+  bool ipc_send_ret;
+
   while (g_running) {
-    // Read one frame from the microphone.
     err = Pa_ReadStream(stream, inputPcm.data(),
                         static_cast<unsigned long>(pcmSamplesPerFrame));
 
-    if (err == paInputOverflowed) {
-      std::cerr << "Warning: input overflow, continuing..." << std::endl;
+    if (err == paInputOverflow) {
+      std::cerr << "Warning: input overflow, continuing" << std::endl;
       continue;
     }
 
@@ -137,48 +147,10 @@ int main() {
       break;
     }
 
-    // Decode encoded frame back to PCM.
-    size_t writtenPcmSamples = 0;
+    ipc_send_ret = ipc.send(dstNodeId, encoded.data(), encoded.size());
 
-    ok = codec->decodeFrame(encoded.data(), writtenEncodedBytes,
-                            outputPcm.data(), outputPcm.size(),
-                            writtenPcmSamples);
-
-    if (!ok) {
-      std::cerr << "Codec decodeFrame failed" << std::endl;
-      break;
-    }
-
-    // Play decoded PCM frame.
-    err = Pa_WriteStream(stream, outputPcm.data(),
-                         static_cast<unsigned long>(writtenPcmSamples));
-
-    if (err == paOutputUnderflowed) {
-      std::cerr << "Warning: output underflow, continuing..." << std::endl;
-      continue;
-    }
-
-    if (err != paNoError) {
-      std::cerr << "Write error: " << Pa_GetErrorText(err) << std::endl;
-      break;
-    }
-
-    frameCount++;
-
-    if ((frameCount % 50) == 0) {
-      std::cout << "Frames processed: " << frameCount
-                << " | PCM: " << pcmSamplesPerFrame * sizeof(int16_t)
-                << " bytes"
-                << " | encoded: " << writtenEncodedBytes << " bytes"
-                << std::endl;
+    if (!ipc_send_ret) {
+      std::cerr << "IPC send error: continuing" << std::endl;
     }
   }
-
-  Pa_StopStream(stream);
-  Pa_CloseStream(stream);
-  Pa_Terminate();
-
-  std::cout << "Audio loopback stopped." << std::endl;
-
-  return 0;
 }
