@@ -1,7 +1,7 @@
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PORTAUDIO REQUIRED IMPORTED_TARGET portaudio-2.0)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/examples)   
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/examples)
 
 add_executable(audio_loopback
     audio_loopback.cpp

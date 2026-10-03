@@ -1,2 +1,2 @@
-add_subdirectory(audio_source)
+add_subdirectory(audio_app)
 add_subdirectory(libs)
