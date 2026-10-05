@@ -2,7 +2,6 @@
 #include <libs/platform-ipc/include/ipc.h>
 #include <portaudio.h>
 
-#include <array>
 #include <csignal>
 #include <cstddef>
 #include <cstdint>
