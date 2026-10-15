@@ -1,5 +1,5 @@
-#include <libs/codec/include/audio_codec_factory.h>
-#include <libs/platform-ipc/include/ipc.h>
+#include <codec/include/audio_codec_factory.h>
+#include <platform-ipc/include/ipc.h>
 #include <portaudio.h>
 
 #include <cmath>

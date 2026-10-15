@@ -1,16 +1,13 @@
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AUDIO_PATH_CODEC_LIBRARY_OUTPUT_DIR}/bin)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PORTAUDIO REQUIRED IMPORTED_TARGET portaudio-2.0)
 
-add_library(sdr_audio_codec STATIC
-    audio_codec_factory.cpp
-    ima_adpcm_codec.cpp
+
+add_project_target_library(audio-stream-manager
+  STATIC
+  SOURCES
+    audio_stream_manager.cpp
+  PUBLIC_INCLUDES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC_LIBS
+    PkgConfig::PORTAUDIO
 )
-
-target_include_directories(sdr_audio_codec
-    PUBLIC
-        ${CMAKE_SOURCE_DIR}/audio_path/libs/codec
-        ${CMAKE_BINARY_DIR}/generated
-)
-
-set_project_warnings(sdr_audio_codec)

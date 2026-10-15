@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(
-    SDR 
-    VERSION 1.0.0 
+    SDR
+    VERSION 1.0.0
     LANGUAGES C CXX
 )
 
@@ -14,5 +14,7 @@ include(GitVersion)
 #include(Dependencies)
 #include(Sanitizers)
 include(StaticAnalyzers)
+include(ProjectTargets)
 
 add_subdirectory(audio_path)
+add_subdirectory(platform-ipc)
